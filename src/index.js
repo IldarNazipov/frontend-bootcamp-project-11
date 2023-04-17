@@ -24,12 +24,11 @@ const validate = (fields) => {
       watchedState.state = 'invalid';
     });
 };
-const form = document.querySelector('.rss-form');
 
+const form = document.querySelector('.rss-form');
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   watchedState.data.website = formData.get('url');
   validate(state.data);
-  console.log(state);
 });
