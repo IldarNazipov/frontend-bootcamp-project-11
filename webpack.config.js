@@ -1,9 +1,16 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default {
   mode: 'development',
   entry: './src/index.js',
   output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'index.handle.js',
     clean: true,
   },
   devServer: {
