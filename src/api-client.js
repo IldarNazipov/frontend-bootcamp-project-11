@@ -5,7 +5,7 @@ import parseData from './parser.js';
 
 const getRss = (url, watchedState, isUpdate = false) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
   .then((response) => {
-    if (response.data.status.content_type.includes('xml')) {
+    if (response.data.status.http_code === 200 && response.data.status.content_type.includes('xml')) {
       if (!isUpdate) {
         watchedState.urlSubmitProcess.errorKey = 'success';
         watchedState.urlSubmitProcess.state = 'success';
