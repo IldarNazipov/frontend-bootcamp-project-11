@@ -1,0 +1,21 @@
+export default {
+  translation: {
+    key: 'Привет мир!',
+    title: 'RSS агрегатор',
+    description: 'Начните читать RSS сегодня! Это легко, это красиво.',
+    label: 'Ссылка RSS',
+    example: 'Пример: https://ru.hexlet.io/lessons.rss, https://lorem-rss.hexlet.app/feed?unit=second',
+    submitBtn: 'Добавить',
+    invalidUrl: 'Ссылка должна быть валидным URL',
+    invalidRss: 'Ресурс не содержит валидный RSS',
+    emptyInput: 'Не должно быть пустым',
+    alreadyExists: 'RSS уже существует',
+    networkError: 'Ошибка сети',
+    success: 'RSS успешно загружен',
+    posts: 'Посты',
+    feeds: 'Фиды',
+    viewBtn: 'Просмотр',
+    readFull: 'Читать полностью',
+    closeModal: 'Закрыть',
+  },
+};
