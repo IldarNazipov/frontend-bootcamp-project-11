@@ -3,13 +3,11 @@ import axios from 'axios';
 import { uniqueId } from 'lodash';
 import parseData from './parser.js';
 
-const getRss = (url, watchedState, isUpdate = false) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+const getRss = (url, watchedState) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
   .then((response) => {
     if (response.data.status.http_code === 200 && response.data.status.content_type.includes('xml')) {
-      if (!isUpdate) {
-        watchedState.urlSubmitProcess.errorKey = 'success';
-        watchedState.urlSubmitProcess.state = 'success';
-      }
+      watchedState.urlSubmitProcess.errorKey = 'success';
+      watchedState.urlSubmitProcess.state = 'success';
       return response.data.contents;
     }
     throw new Error('Invalid RSS');
