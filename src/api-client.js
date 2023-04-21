@@ -36,14 +36,11 @@ const updatePosts = (data, watchedState) => {
 
 const fetchRss = (url, watchedState, isUpdate = false) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`, { timeout: 5000 })
   .then((response) => {
-    if (response.status === 200 && response.data.status.content_type.includes('xml')) {
-      if (!isUpdate) {
-        watchedState.urlSubmitProcess.errorKey = 'success';
-        watchedState.urlSubmitProcess.state = 'success';
-      }
-      return response.data.contents;
+    if (!isUpdate) {
+      watchedState.urlSubmitProcess.errorKey = 'success';
+      watchedState.urlSubmitProcess.state = 'success';
     }
-    throw new Error('Invalid RSS');
+    return response.data.contents;
   })
   .then((str) => parseData(str, 'application/xml'))
   .then((data) => updatePosts(data, watchedState))
