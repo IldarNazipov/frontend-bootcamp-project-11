@@ -36,7 +36,7 @@ const updatePosts = (data, watchedState) => {
 
 const fetchRss = (url, watchedState, isUpdate = false) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`, { timeout: 5000 })
   .then((response) => {
-    if (response.data.status.http_code === 200 && response.data.status.content_type.includes('xml')) {
+    if (response.status === 200 && response.data.status.content_type.includes('xml')) {
       if (!isUpdate) {
         watchedState.urlSubmitProcess.errorKey = 'success';
         watchedState.urlSubmitProcess.state = 'success';
