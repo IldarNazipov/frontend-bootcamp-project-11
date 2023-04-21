@@ -1,8 +1,8 @@
 export default (data, type) => {
   const parser = new DOMParser();
-  const obj = parser.parseFromString(data, type);
-  if (!obj.querySelector('rss')) {
+  const xmlDocument = parser.parseFromString(data, type);
+  if (!xmlDocument.querySelector('rss')) {
     throw new Error('Invalid RSS');
   }
-  return obj;
+  return xmlDocument;
 };
