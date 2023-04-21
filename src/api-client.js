@@ -2,8 +2,39 @@
 import axios from 'axios';
 import { uniqueId } from 'lodash';
 import parseData from './parser.js';
+import state from './state.js';
 
-const getRss = (url, watchedState, isUpdate = false) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+const updatePosts = (data, watchedState) => {
+  const feedTitle = data.querySelector('title').textContent;
+  const feedDescription = data.querySelector('description').textContent;
+  const existingFeed = watchedState.feeds.find((item) => item.feedTitle === feedTitle);
+  if (!existingFeed) {
+    const feedId = uniqueId();
+    watchedState.feeds.push({
+      feedId,
+      feedTitle,
+      feedDescription,
+    });
+  }
+  const posts = data.querySelectorAll('item');
+  posts.forEach((post) => {
+    const postTitle = post.querySelector('title').textContent;
+    const postLink = post.querySelector('link').textContent;
+    const postDescription = post.querySelector('description').textContent;
+    const existingPost = watchedState.posts.find((item) => item.postTitle === postTitle);
+    if (!existingPost) {
+      const postId = uniqueId();
+      watchedState.posts.push({
+        postId,
+        postTitle,
+        postLink,
+        postDescription,
+      });
+    }
+  });
+};
+
+const fetchRss = (url, watchedState, isUpdate = false) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`, { timeout: 5000 })
   .then((response) => {
     if (response.data.status.http_code === 200 && response.data.status.content_type.includes('xml')) {
       if (!isUpdate) {
@@ -15,39 +46,11 @@ const getRss = (url, watchedState, isUpdate = false) => axios.get(`https://allor
     throw new Error('Invalid RSS');
   })
   .then((str) => parseData(str, 'application/xml'))
-  .then((data) => {
-    const feedTitle = data.querySelector('title').textContent;
-    const feedDescription = data.querySelector('description').textContent;
-    const existingFeed = watchedState.feeds.find((item) => item.feedTitle === feedTitle);
-    if (!existingFeed) {
-      const feedId = uniqueId();
-      watchedState.feeds.push({
-        feedId,
-        feedTitle,
-        feedDescription,
-      });
-    }
-    const posts = data.querySelectorAll('item');
-    posts.forEach((post) => {
-      const postTitle = post.querySelector('title').textContent;
-      const postLink = post.querySelector('link').textContent;
-      const postDescription = post.querySelector('description').textContent;
-      const existingPost = watchedState.posts.find((item) => item.postTitle === postTitle);
-      if (!existingPost) {
-        const postId = uniqueId();
-        watchedState.posts.push({
-          postId,
-          postTitle,
-          postLink,
-          postDescription,
-        });
-      }
-    });
-  })
+  .then((data) => updatePosts(data, watchedState))
   .catch((e) => {
     if (!isUpdate) {
       watchedState.urlSubmitProcess.state = 'invalidRss';
-      watchedState.urlSubmitProcess.urls.pop();
+      state.urlSubmitProcess.urls.pop();
       if (e.message === 'Invalid RSS') {
         watchedState.urlSubmitProcess.errorKey = 'invalidRss';
       } else if (e.message === 'Network Error') {
@@ -59,8 +62,8 @@ const getRss = (url, watchedState, isUpdate = false) => axios.get(`https://allor
   })
   .finally(() => {
     setTimeout(() => {
-      getRss(url, watchedState, true);
+      fetchRss(url, watchedState, true);
     }, 5000);
   });
 
-export default getRss;
+export default fetchRss;

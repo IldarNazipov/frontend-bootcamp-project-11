@@ -11,22 +11,26 @@ export default (state) => onChange(state, (path) => {
   if (path === 'urlSubmitProcess.state' || path === 'urlSubmitProcess.errorKey') {
     if (state.urlSubmitProcess.state === 'invalid') {
       submitButtonEl.classList.remove('disabled');
+      urlInputEl.disabled = false;
       urlInputEl.classList.add('is-invalid');
       feedbackEl.classList.add('text-danger');
       feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
     }
     if (state.urlSubmitProcess.state === 'invalidRss') {
       submitButtonEl.classList.remove('disabled');
+      urlInputEl.disabled = false;
       urlInputEl.classList.remove('is-invalid');
       feedbackEl.classList.add('text-danger');
       feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
     }
     if (state.urlSubmitProcess.state === 'sending') {
       submitButtonEl.classList.add('disabled');
+      urlInputEl.disabled = true;
       feedbackEl.classList.add('text-danger');
     }
     if (state.urlSubmitProcess.state === 'success') {
       submitButtonEl.classList.remove('disabled');
+      urlInputEl.disabled = false;
       urlInputEl.classList.remove('is-invalid');
       feedbackEl.classList.remove('text-danger');
       feedbackEl.classList.add('text-success');

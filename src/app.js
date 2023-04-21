@@ -2,7 +2,7 @@
 import validate from './validate.js';
 import state from './state.js';
 import render from './view.js';
-import getRss from './api-client.js';
+import fetchRss from './api-client.js';
 
 export default () => {
   const rssFormEl = document.querySelector('.rss-form');
@@ -23,7 +23,7 @@ export default () => {
     watchedState.urlSubmitProcess.state = 'sending';
     validate(state.urlSubmitProcess.inputData, watchedState).then(() => {
       if (state.urlSubmitProcess.state === 'valid') {
-        getRss(state.urlSubmitProcess.inputData.website, watchedState);
+        fetchRss(state.urlSubmitProcess.inputData.website, watchedState);
       }
     });
   });
