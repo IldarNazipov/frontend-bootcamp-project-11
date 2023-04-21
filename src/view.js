@@ -1,12 +1,13 @@
 /* eslint-disable max-len */
 import onChange from 'on-change';
+import i18nextInstance from './i18n.js';
 
 const urlInputEl = document.querySelector('#url-input');
 const feedbackEl = document.querySelector('.feedback');
 const submitButtonEl = document.querySelector('button[type="submit"]');
 const modal = document.getElementById('modal');
 
-export default (state, i18nextInstance) => onChange(state, (path) => {
+export default (state) => onChange(state, (path) => {
   if (path === 'urlSubmitProcess.state' || path === 'urlSubmitProcess.errorKey') {
     if (state.urlSubmitProcess.state === 'invalid') {
       submitButtonEl.classList.remove('disabled');

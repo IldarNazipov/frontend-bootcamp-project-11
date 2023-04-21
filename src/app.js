@@ -4,10 +4,10 @@ import state from './state.js';
 import render from './view.js';
 import getRss from './api-client.js';
 
-export default (i18nextInstance) => {
+export default () => {
   const rssFormEl = document.querySelector('.rss-form');
   const modal = document.getElementById('modal');
-  const watchedState = render(state, i18nextInstance);
+  const watchedState = render(state);
 
   modal.addEventListener('show.bs.modal', (event) => {
     const button = event.relatedTarget;

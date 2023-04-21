@@ -1,27 +1,17 @@
-import i18next from 'i18next';
 import app from './app.js';
-import resources from './locales/index.js';
+import i18nextInstance from './i18n.js';
 
 export default () => {
-  const i18nextInstance = i18next.createInstance();
-  i18nextInstance
-    .init({
-      lng: 'ru',
-      debug: 'true',
-      resources,
-    })
-    .catch((err) => console.log('something went wrong loading', err));
-
-  const h1 = document.querySelector('h1');
-  const description = document.querySelector('.lead');
-  const label = document.querySelector('label');
-  const example = document.querySelector('.text-muted');
-  const urlInput = document.querySelector('#url-input');
-  const submitBtn = document.querySelector('button[type="submit"]');
-  const readFullBtn = document.querySelector('.full-article');
-  const closeModalBtn = document.querySelector('.modal-footer > [data-bs-dismiss="modal"]');
-
   const initialRender = () => {
+    const h1 = document.querySelector('h1');
+    const description = document.querySelector('.lead');
+    const label = document.querySelector('label');
+    const example = document.querySelector('.text-muted');
+    const urlInput = document.querySelector('#url-input');
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const readFullBtn = document.querySelector('.full-article');
+    const closeModalBtn = document.querySelector('.modal-footer > [data-bs-dismiss="modal"]');
+
     h1.textContent = i18nextInstance.t('title');
     description.textContent = i18nextInstance.t('description');
     label.textContent = i18nextInstance.t('label');
@@ -34,5 +24,5 @@ export default () => {
   };
 
   initialRender();
-  app(i18nextInstance);
+  app();
 };
