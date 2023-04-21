@@ -11,7 +11,7 @@ export default {
       website: '',
     },
     urls: [],
-    errorKey: '',
+    errorKey: 'success',
   },
   feeds: [],
   posts: [],
