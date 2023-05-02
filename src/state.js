@@ -6,6 +6,7 @@ export default {
     },
   },
   urlSubmitProcess: {
+    firstSubmit: false,
     state: 'filling',
     inputData: {
       website: '',

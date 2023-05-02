@@ -14,6 +14,7 @@ export default (state) => onChange(state, (path) => {
       urlInputEl.disabled = false;
       urlInputEl.classList.add('is-invalid');
       feedbackEl.classList.add('text-danger');
+      urlInputEl.focus();
       feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
     }
     if (state.urlSubmitProcess.state === 'invalidRss') {
@@ -21,6 +22,7 @@ export default (state) => onChange(state, (path) => {
       urlInputEl.disabled = false;
       urlInputEl.classList.remove('is-invalid');
       feedbackEl.classList.add('text-danger');
+      urlInputEl.focus();
       feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
     }
     if (state.urlSubmitProcess.state === 'sending') {

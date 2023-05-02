@@ -3,6 +3,8 @@ import validate from './validate.js';
 import state from './state.js';
 import render from './view.js';
 import fetchRss from './api-client.js';
+import updatePosts from './updatePosts.js';
+import updateAllRss from './updateAllRss.js';
 
 export default () => {
   const rssFormEl = document.querySelector('.rss-form');
@@ -23,7 +25,28 @@ export default () => {
     view.urlSubmitProcess.state = 'sending';
     validate(state.urlSubmitProcess.inputData, view).then(() => {
       if (state.urlSubmitProcess.state === 'valid') {
-        fetchRss(state.urlSubmitProcess.inputData.website, view);
+        fetchRss(state.urlSubmitProcess.inputData.website)
+          .then((xmlDocument) => {
+            view.urlSubmitProcess.state = 'success';
+            view.urlSubmitProcess.errorKey = 'success';
+            updatePosts(xmlDocument);
+            if (!state.urlSubmitProcess.firstSubmit) {
+              state.urlSubmitProcess.firstSubmit = true;
+              updateAllRss(state.urlSubmitProcess.urls);
+            }
+          })
+          .catch((err) => {
+            view.urlSubmitProcess.state = 'invalidRss';
+            state.urlSubmitProcess.urls.pop();
+            if (err.message === 'Invalid RSS') {
+              view.urlSubmitProcess.errorKey = 'invalidRss';
+            } else if (err.message === 'Network Error') {
+              view.urlSubmitProcess.errorKey = 'networkError';
+            } else {
+              view.urlSubmitProcess.errorKey = 'networkError';
+              console.log(err.message);
+            }
+          });
       }
     });
   });
