@@ -1,13 +1,14 @@
 import { uniqueId } from 'lodash';
 import render from './view.js';
-import state from './state.js';
 
-const view = render(state);
-
-const updateRss = (document) => {
-  const feedTitle = document.querySelector('title').textContent;
-  const feedDescription = document.querySelector('description').textContent;
-  const existingFeed = view.feeds.find((item) => item.feedTitle === feedTitle);
+const updatePosts = (state, parsedData, i18nextInstance) => {
+  const view = render(state, i18nextInstance);
+  if (!parsedData || !Object.hasOwn(parsedData, 'feed')) {
+    return;
+  }
+  const { feedTitle } = parsedData.feed;
+  const { feedDescription } = parsedData.feed;
+  const existingFeed = state.feeds.find((item) => item.feedTitle === feedTitle);
   if (!existingFeed) {
     const feedId = uniqueId();
     view.feeds.push({
@@ -16,11 +17,12 @@ const updateRss = (document) => {
       feedDescription,
     });
   }
-  const posts = document.querySelectorAll('item');
+
+  const { posts } = parsedData;
   posts.forEach((post) => {
-    const postTitle = post.querySelector('title').textContent;
-    const postLink = post.querySelector('link').textContent;
-    const postDescription = post.querySelector('description').textContent;
+    const { postTitle } = post;
+    const { postLink } = post;
+    const { postDescription } = post;
     const existingPost = view.posts.find((item) => item.postTitle === postTitle);
     if (!existingPost) {
       const postId = uniqueId();
@@ -34,4 +36,4 @@ const updateRss = (document) => {
   });
 };
 
-export default updateRss;
+export default updatePosts;

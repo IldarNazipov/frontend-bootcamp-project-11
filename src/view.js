@@ -1,90 +1,94 @@
-/* eslint-disable max-len */
 import onChange from 'on-change';
-import i18nextInstance from './i18n.js';
 
-const urlInputEl = document.querySelector('#url-input');
-const feedbackEl = document.querySelector('.feedback');
-const submitButtonEl = document.querySelector('button[type="submit"]');
-const modal = document.getElementById('modal');
+export default (state, i18nextInstance) => {
+  const urlInputEl = document.querySelector('#url-input');
+  const feedbackEl = document.querySelector('.feedback');
+  const submitButtonEl = document.querySelector('button[type="submit"]');
+  const modal = document.getElementById('modal');
 
-export default (state) => onChange(state, (path) => {
-  if (path === 'urlSubmitProcess.state' || path === 'urlSubmitProcess.errorKey') {
-    if (state.urlSubmitProcess.state === 'invalid') {
-      submitButtonEl.classList.remove('disabled');
-      urlInputEl.disabled = false;
-      urlInputEl.classList.add('is-invalid');
-      feedbackEl.classList.add('text-danger');
-      urlInputEl.focus();
-      feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
+  const renderInputForm = (stateObj) => {
+    switch (stateObj.urlSubmitProcess.state) {
+      case 'invalid':
+        submitButtonEl.classList.remove('disabled');
+        urlInputEl.disabled = false;
+        urlInputEl.classList.add('is-invalid');
+        feedbackEl.classList.add('text-danger');
+        urlInputEl.focus();
+        feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
+        break;
+      case 'invalidRss':
+        submitButtonEl.classList.remove('disabled');
+        urlInputEl.disabled = false;
+        urlInputEl.classList.remove('is-invalid');
+        feedbackEl.classList.add('text-danger');
+        urlInputEl.focus();
+        feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
+        break;
+      case 'sending':
+        submitButtonEl.classList.add('disabled');
+        urlInputEl.disabled = true;
+        feedbackEl.classList.add('text-danger');
+        break;
+      case 'success':
+        submitButtonEl.classList.remove('disabled');
+        urlInputEl.disabled = false;
+        urlInputEl.classList.remove('is-invalid');
+        feedbackEl.classList.remove('text-danger');
+        feedbackEl.classList.add('text-success');
+        feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
+        urlInputEl.value = '';
+        urlInputEl.focus();
+        break;
+      case 'valid':
+        urlInputEl.classList.remove('is-invalid');
+        feedbackEl.classList.remove('text-danger');
+        feedbackEl.textContent = '';
+        break;
+      default:
+        break;
     }
-    if (state.urlSubmitProcess.state === 'invalidRss') {
-      submitButtonEl.classList.remove('disabled');
-      urlInputEl.disabled = false;
-      urlInputEl.classList.remove('is-invalid');
-      feedbackEl.classList.add('text-danger');
-      urlInputEl.focus();
-      feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
-    }
-    if (state.urlSubmitProcess.state === 'sending') {
-      submitButtonEl.classList.add('disabled');
-      urlInputEl.disabled = true;
-      feedbackEl.classList.add('text-danger');
-    }
-    if (state.urlSubmitProcess.state === 'success') {
-      submitButtonEl.classList.remove('disabled');
-      urlInputEl.disabled = false;
-      urlInputEl.classList.remove('is-invalid');
-      feedbackEl.classList.remove('text-danger');
-      feedbackEl.classList.add('text-success');
-      feedbackEl.textContent = i18nextInstance.t(state.urlSubmitProcess.errorKey);
-      urlInputEl.value = '';
-      urlInputEl.focus();
-    }
-    if (state.urlSubmitProcess.state === 'valid') {
-      urlInputEl.classList.remove('is-invalid');
-      feedbackEl.classList.remove('text-danger');
-      feedbackEl.textContent = '';
-    }
-  }
-  if (path === 'feeds') {
+  };
+
+  const renderFeeds = (stateObj) => {
     const feedsContainer = document.querySelector('.feeds');
     feedsContainer.innerHTML = '';
     feedsContainer.innerHTML = `
-      <div class="card border-0">
-        <div class="card-body">
-          <h2 class="card-title h4">${i18nextInstance.t('feeds')}</h2>
-        </div>
-        <ul class="list-group border-0 rounded-0"></ul>
-      </div>`;
+    <div class="card border-0">
+      <div class="card-body">
+        <h2 class="card-title h4">${i18nextInstance.t('feeds')}</h2>
+      </div>
+      <ul class="list-group border-0 rounded-0"></ul>
+    </div>`;
     const ul = feedsContainer.querySelector('ul');
-    state.feeds.forEach((feed) => {
+    stateObj.feeds.forEach((feed) => {
       const li = document.createElement('li');
       li.classList.add('list-group-item', 'border-0', 'border-end-0');
       li.innerHTML = `
-        <h3 class="h6 m-0">${feed.feedTitle}</h3>
-        <p class="m-0 small text-black-50">${feed.feedDescription}</p>
-        `;
+       <h3 class="h6 m-0">${feed.feedTitle}</h3>
+      <p class="m-0 small text-black-50">${feed.feedDescription}</p>
+      `;
       ul.prepend(li);
     });
-  }
-  if (path === 'posts') {
+  };
+
+  const renderPosts = (stateObj) => {
     const postsContainer = document.querySelector('.posts');
     postsContainer.innerHTML = '';
     postsContainer.innerHTML = `
-      <div class="card border-0">
-        <div class="card-body">
-          <h2 class="card-title h4">${i18nextInstance.t('posts')}</h2>
-        </div>
-        <ul class="list-group border-0 rounded-0"></ul>
+    <div class="card border-0">
+      <div class="card-body">
+        <h2 class="card-title h4">${i18nextInstance.t('posts')}</h2>
       </div>
-      `;
+      <ul class="list-group border-0 rounded-0"></ul>
+    </div>
+    `;
     const ul = postsContainer.querySelector('ul');
-    state.posts.forEach((post) => {
+    stateObj.posts.forEach((post) => {
       const li = document.createElement('li');
       li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
       const anchor = document.createElement('a');
       anchor.href = post.postLink;
-      if (state.uiState.visitedIds.includes(post.postId)) {
+      if (stateObj.uiState.visitedIds.includes(post.postId)) {
         anchor.classList.add('fw-normal', 'link-secondary');
       } else {
         anchor.classList.add('fw-bold');
@@ -105,22 +109,57 @@ export default (state) => onChange(state, (path) => {
       li.appendChild(button);
       ul.prepend(li);
     });
-  }
-  if (path === 'uiState.modal.targetPostId') {
-    const [targetPost] = state.posts.filter((item) => item.postId === state.uiState.modal.targetPostId);
+    const anchors = postsContainer.querySelectorAll('a');
+    anchors.forEach((anchor) => {
+      anchor.addEventListener('click', (e) => {
+        const targetId = e.target.getAttribute('data-id');
+        state.uiState.visitedIds.push(targetId);
+        e.target.classList.remove('fw-bold');
+        e.target.classList.add('fw-normal', 'link-secondary');
+      });
+    });
+  };
+
+  const renderModal = (stateObj) => {
+    const [targetPost] = stateObj.posts
+      .filter((item) => item.postId === stateObj.uiState.modal.targetPostId);
     const modalTitle = modal.querySelector('.modal-title');
     const modalBody = modal.querySelector('.modal-body');
     modalTitle.textContent = targetPost.postTitle;
     modalBody.textContent = targetPost.postDescription;
     const modalFullBtn = modal.querySelector('.full-article');
     modalFullBtn.href = targetPost.postLink;
-  }
-  if (path === 'uiState.visitedIds') {
-    const visitedLinksIds = state.uiState.visitedIds;
+  };
+
+  const renderLinks = (stateObj) => {
+    const visitedLinksIds = stateObj.uiState.visitedIds;
     visitedLinksIds.forEach((id) => {
       const linkElement = document.querySelector(`[data-id="${id}"]`);
       linkElement.classList.remove('fw-bold');
       linkElement.classList.add('fw-normal', 'link-secondary');
     });
-  }
-});
+  };
+
+  return onChange(state, (path) => {
+    switch (path) {
+      case 'urlSubmitProcess.state':
+      case 'urlSubmitProcess.errorKey':
+        renderInputForm(state);
+        break;
+      case 'feeds':
+        renderFeeds(state);
+        break;
+      case 'posts':
+        renderPosts(state);
+        break;
+      case 'uiState.modal.targetPostId':
+        renderModal(state);
+        break;
+      case 'uiState.visitedIds':
+        renderLinks(state);
+        break;
+      default:
+        break;
+    }
+  });
+};

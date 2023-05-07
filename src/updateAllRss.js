@@ -1,18 +1,15 @@
 import fetchRss from './api-client.js';
 import updatePosts from './updatePosts.js';
 
-const updateAllRss = (urls) => {
-  const promises = urls.map((url) => fetchRss(url));
+const updateAllRss = (urls, state, i18nextInstance) => {
+  const promises = urls.map((url) => fetchRss(url).catch(console.log));
   Promise.all(promises)
     .then((array) => {
-      array.forEach((item) => updatePosts(item));
+      array.forEach((parsedData) => updatePosts(state, parsedData, i18nextInstance));
     })
-    .then(() => setTimeout(() => {
-      updateAllRss(urls);
-    }, 5000))
-    .catch((e) => {
-      console.log(e.message);
-    });
+    .finally(() => setTimeout(() => {
+      updateAllRss(urls, state, i18nextInstance);
+    }, 5000));
 };
 
 export default updateAllRss;

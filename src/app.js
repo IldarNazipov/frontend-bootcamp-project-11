@@ -1,15 +1,43 @@
-/* eslint-disable max-len */
+import i18next from 'i18next';
+import resources from './locales/index.js';
 import validate from './validate.js';
-import state from './state.js';
 import render from './view.js';
 import fetchRss from './api-client.js';
 import updatePosts from './updatePosts.js';
 import updateAllRss from './updateAllRss.js';
 
 export default () => {
+  const state = {
+    uiState: {
+      visitedIds: [],
+      modal: {
+        targetPostId: '',
+      },
+    },
+    urlSubmitProcess: {
+      state: 'filling',
+      inputData: {
+        website: '',
+      },
+      urls: [],
+      errorKey: 'success',
+    },
+    feeds: [],
+    posts: [],
+  };
+
+  const i18nextInstance = i18next.createInstance();
+  i18nextInstance
+    .init({
+      lng: 'en',
+      debug: 'true',
+      resources,
+    })
+    .catch((err) => console.log('something went wrong loading', err));
+
   const rssFormEl = document.querySelector('.rss-form');
   const modal = document.getElementById('modal');
-  const view = render(state);
+  const view = render(state, i18nextInstance);
 
   modal.addEventListener('show.bs.modal', (event) => {
     const button = event.relatedTarget;
@@ -26,28 +54,23 @@ export default () => {
     validate(state.urlSubmitProcess.inputData, view).then(() => {
       if (state.urlSubmitProcess.state === 'valid') {
         fetchRss(state.urlSubmitProcess.inputData.website)
-          .then((xmlDocument) => {
+          .then((parsedData) => {
             view.urlSubmitProcess.state = 'success';
             view.urlSubmitProcess.errorKey = 'success';
-            updatePosts(xmlDocument);
-            if (!state.urlSubmitProcess.firstSubmit) {
-              state.urlSubmitProcess.firstSubmit = true;
-              updateAllRss(state.urlSubmitProcess.urls);
-            }
+            updatePosts(state, parsedData, i18nextInstance);
           })
           .catch((err) => {
             view.urlSubmitProcess.state = 'invalidRss';
             state.urlSubmitProcess.urls.pop();
-            if (err.message === 'Invalid RSS') {
+            if (err.isParsingError) {
               view.urlSubmitProcess.errorKey = 'invalidRss';
-            } else if (err.message === 'Network Error') {
-              view.urlSubmitProcess.errorKey = 'networkError';
             } else {
               view.urlSubmitProcess.errorKey = 'networkError';
-              console.log(err.message);
             }
           });
       }
     });
   });
+
+  setTimeout(() => updateAllRss(view.urlSubmitProcess.urls, state, i18nextInstance), 5000);
 };
