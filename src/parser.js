@@ -1,4 +1,4 @@
-export default (data, type) => {
+export default (data, type, url) => {
   const parser = new DOMParser();
   const xmlDocument = parser.parseFromString(data, type);
   const parseError = xmlDocument.querySelector('parsererror');
@@ -7,6 +7,7 @@ export default (data, type) => {
     error.isParsingError = true;
     throw error;
   }
+  const feedLink = url;
   const feedTitle = xmlDocument.querySelector('title').textContent;
   const feedDescription = xmlDocument.querySelector('description').textContent;
   const posts = Array.from(xmlDocument.querySelectorAll('item'));
@@ -25,6 +26,7 @@ export default (data, type) => {
     feed: {
       feedTitle,
       feedDescription,
+      feedLink,
     },
     posts: mappedPosts,
   };

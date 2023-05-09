@@ -10,5 +10,5 @@ export default (url) => {
   };
   return axios.get(addProxy(url), { timeout: 5000 })
     .then((response) => response.data.contents)
-    .then((data) => parseData(data, 'application/xml'));
+    .then((data) => parseData(data, 'application/xml', url));
 };

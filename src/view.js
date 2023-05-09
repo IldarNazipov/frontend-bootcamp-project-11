@@ -45,7 +45,7 @@ export default (state, i18nextInstance) => {
         feedbackEl.textContent = '';
         break;
       default:
-        break;
+        throw new Error(`Unknown state: '${stateObj.urlSubmitProcess.state}'!`);
     }
   };
 
@@ -159,7 +159,7 @@ export default (state, i18nextInstance) => {
         renderLinks(state);
         break;
       default:
-        break;
+        throw new Error(`Unhandled state change at path: 'state.${path}'`);
     }
   });
 };
